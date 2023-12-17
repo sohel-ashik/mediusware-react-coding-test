@@ -1,18 +1,18 @@
 import React, {useState} from 'react';
-import { useEffect } from 'react';
-import data from '../assets/data.json';
 
 const Problem1 = () => {
 
     const [show, setShow] = useState('all');
     const [hit, setHit] = useState(false);
 
+    const [name,setName] = useState('');
+    const [status,setStatus] = useState('');
+
     const [allData,setAllData] = useState([]);// allData state
     const [filteredData, setFilteredData] = useState([...allData]); //only filtered data state
+    
 
-
-    useEffect(()=>{
-        // first load all the data to the coranpondent state
+    const sorting = (arr)=>{
         const order = ["Active", "Completed", "Pending", "Archive"];
         setShow('all')
 
@@ -22,12 +22,30 @@ const Problem1 = () => {
             const B = order.indexOf(b.status);
           
             return A - B;
-          }
-        
-          //filtering the order
-        setAllData([...data.sort(sortByStatus)]);
-        setFilteredData([...allData]);
-    },[hit])
+        }
+
+        //returning the sorted
+        return arr.sort(sortByStatus);
+    }
+
+
+
+    const handleSubmit = (name, status)=>{
+        const temp = {
+            name,
+            status
+        }
+
+        // adding the new data to the state
+        const data = [...allData];
+        data.push(temp);
+
+        //updateding the state
+        setAllData(data);
+        setFilteredData(data);
+        setShow('all')
+
+    }
 
 
     const handleClick = (val) =>{
@@ -36,7 +54,7 @@ const Problem1 = () => {
         } else if(val === 'completed'){
             setFilteredData([...allData.filter(item => item.status === 'Completed')]);
         } else {
-            setHit(pre=>!pre);
+            setFilteredData(sorting(allData))
         }
 
         setShow(val);
@@ -48,15 +66,15 @@ const Problem1 = () => {
             <div className="row justify-content-center mt-5">
                 <h4 className='text-center text-uppercase mb-5'>Problem-1</h4>
                 <div className="col-6 ">
-                    <form className="row gy-2 gx-3 align-items-center mb-4">
+                    <form className="row gy-2 gx-3 align-items-center mb-4" onSubmit={(e)=>e.preventDefault()}>
                         <div className="col-auto">
-                            <input type="text" className="form-control" placeholder="Name"/>
+                            <input type="text" className="form-control" placeholder="Name" onChange={(e)=>setName(e.target.value)} value = {name}/>
                         </div>
                         <div className="col-auto">
-                            <input type="text" className="form-control" placeholder="Status"/>
+                            <input type="text" className="form-control" placeholder="Status" onChange={(e)=>setStatus(e.target.value)} value = {status}/>
                         </div>
                         <div className="col-auto">
-                            <button type="submit" className="btn btn-primary">Submit</button>
+                            <button onClick={()=>{handleSubmit(name,status); setName(''); setStatus('')}} className="btn btn-primary">Submit</button>
                         </div>
                     </form>
                 </div>
