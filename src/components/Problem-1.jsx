@@ -1,10 +1,44 @@
 import React, {useState} from 'react';
+import { useEffect } from 'react';
+import data from '../assets/data.json';
 
 const Problem1 = () => {
 
     const [show, setShow] = useState('all');
+    const [hit, setHit] = useState(false);
+
+    const [allData,setAllData] = useState([]);// allData state
+    const [filteredData, setFilteredData] = useState([...allData]); //only filtered data state
+
+
+    useEffect(()=>{
+        // first load all the data to the coranpondent state
+        const order = ["Active", "Completed", "Pending", "Archive"];
+        setShow('all')
+
+        //this is the orderd sorting function
+        function sortByStatus(a, b) {
+            const A = order.indexOf(a.status);
+            const B = order.indexOf(b.status);
+          
+            return A - B;
+          }
+        
+          //filtering the order
+        setAllData([...data.sort(sortByStatus)]);
+        setFilteredData([...allData]);
+    },[hit])
+
 
     const handleClick = (val) =>{
+        if(val === 'active'){
+            setFilteredData([...allData.filter(item => item.status === 'Active')]);
+        } else if(val === 'completed'){
+            setFilteredData([...allData.filter(item => item.status === 'Completed')]);
+        } else {
+            setHit(pre=>!pre);
+        }
+
         setShow(val);
     }
 
@@ -47,7 +81,20 @@ const Problem1 = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        
+                            {filteredData.map((item)=>{
+                                return (
+                                    <tr>
+                                        <th style={{fontWeight:'normal'}}  scope="col">{item.name}</th>
+                                        {item.status ==='Completed' ? 
+                                        <th style={{fontWeight:'normal',color:'green'}} scope="col">{item.status}</th> 
+                                        : item.status ==='Active' ? <th style={{fontWeight:'normal',color:'blue'}} scope="col">{item.status}</th> 
+                                        : item.status === 'Pending' ? <th style={{fontWeight:'normal', color:'red'}} scope="col">{item.status}</th>
+                                        : <th style={{fontWeight:'normal'}} scope="col">{item.status}</th>
+                                    }
+
+                                    </tr>
+                                )
+                            })}
                         </tbody>
                     </table>
                 </div>
@@ -57,3 +104,4 @@ const Problem1 = () => {
 };
 
 export default Problem1;
+
